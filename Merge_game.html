@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8"> 
+<style>
+canvas {
+    border:1px solid #d3d3d3;
+    background-color: #f1f1f1;
+}
+p {
+    display: inline;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 0;
+    margin-right: 0;
+	font-size:32px;
+}
+h1{
+    display: inline;
+    margin-right: 1;
+}
+h2{
+    display: inline;
+}
+button {
+    background-color: #f3f3f3;
+    border-width: 3px ;
+    color: black;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+}
+button:hover {
+    background-color: #fcc5a0;
+    color: white;
+}
+
+</style>
+</head>
+<body onload = "startGame()">
+
+<h1 id ="title">Merge it until all red! </h1>
+<br><br>
+<h2 id ="merge">#Merged - 0　　</h2>
+<h2 id ="red">red - </h2>
+<h2 id ="redcount">0/36　　</h2>
+<h2 id ="cheat">cheated - 0 　　</h2>
+<br>
+<br>
+<p id="mainarray"></p>
+
+<div id="write"></div>
+
+<button onclick="merge([0,0])" id ="00"></button>
+<button onclick="merge([0,1])" id ="01"></button>
+<button onclick="merge([0,2])" id ="02"></button>
+<button onclick="merge([0,3])" id ="03"></button>
+<button onclick="merge([0,4])" id ="04"></button>
+<button onclick="merge([0,5])" id ="05"></button>     ---- <button onclick="startGame()">Shuffle</button>
+<br>
+<button onclick="merge([1,0])" id ="10"></button>
+<button onclick="merge([1,1])" id ="11"></button>
+<button onclick="merge([1,2])" id ="12"></button>
+<button onclick="merge([1,3])" id ="13"></button>
+<button onclick="merge([1,4])" id ="14"></button>
+<button onclick="merge([1,5])" id ="15"></button>
+<br>
+<button onclick="merge([2,0])" id ="20"></button>
+<button onclick="merge([2,1])" id ="21"></button>
+<button onclick="merge([2,2])" id ="22"></button>
+<button onclick="merge([2,3])" id ="23"></button>
+<button onclick="merge([2,4])" id ="24"></button>
+<button onclick="merge([2,5])" id ="25"></button>
+<br>
+<button onclick="merge([3,0])" id ="30"></button>
+<button onclick="merge([3,1])" id ="31"></button>
+<button onclick="merge([3,2])" id ="32"></button>
+<button onclick="merge([3,3])" id ="33"></button>
+<button onclick="merge([3,4])" id ="34"></button>
+<button onclick="merge([3,5])" id ="35"></button>
+<br>
+<button onclick="merge([4,0])" id ="40"></button>
+<button onclick="merge([4,1])" id ="41"></button>
+<button onclick="merge([4,2])" id ="42"></button>
+<button onclick="merge([4,3])" id ="43"></button>
+<button onclick="merge([4,4])" id ="44"></button>
+<button onclick="merge([4,5])" id ="45"></button>
+<br>
+<button onclick="merge([5,0])" id ="50"></button>
+<button onclick="merge([5,1])" id ="51"></button>
+<button onclick="merge([5,2])" id ="52"></button>
+<button onclick="merge([5,3])" id ="53"></button>
+<button onclick="merge([5,4])" id ="54"></button>
+<button onclick="merge([5,5])" id ="55"></button>
+
+<script>
+var current_pos = [];
+var pos = [];
+var QB= [];
+arena_scale = 6;
+max_Q = 4; // max value in squre
+max_ger_Q = 4;
+var step = 0;
+ulti_state = [];
+clicktimes = 0;
+cheat = -1;
+red = 0;
+drawed_pos = [];
+
+//Qblack = "#222222";
+//Qred = "#ff1234";
+
+
+function startGame() {
+
+	QB = newray(6,5);
+	pos = [1,1,1,2];
+	//document.write(QB);
+	//new_ptag();
+	newdraw(QB);
+	//ulti_state_array();
+	//swap([1,2],[2,2])
+	cheat++;
+	document.getElementById("cheat").innerHTML = "cheated - "+cheat+"　　";
+}
+
+function newray(){
+
+	var matrix = [];
+	for(var i=0; i<arena_scale; i++) {
+		matrix[i] = [];
+		for(var j=0; j<arena_scale; j++) {
+			matrix[i][j] = roll(max_Q);
+		}
+	}
+	return matrix;
+}
+
+function ulti_state_array(){
+
+	for(var i=0; i<arena_scale; i++) {
+		ulti_state[i] = [];
+		for(var j=0; j<arena_scale; j++) {
+			ulti_state[i][j] = 0;
+		}
+	}
+	return ulti_state;
+}
+
+function roll(max) {
+	return Math.floor(Math.random() * (max)) + 1;
+	}
+
+function new_ptag(){
+	for(var i=0; i<arena_scale; i++){
+		for (var j=0;j<arena_scale;j++){
+			document.getElementById("write").innerHTML = "<p id="+'"'+String(i)+String(j)+'"'+"></p>";
+		}
+	document.getElementById("write").innerHTML = "<br>";
+	}
+}
+
+function newdraw(matrix){
+	for(var i=0; i<arena_scale; i++){
+		for (var j=0;j<arena_scale;j++){
+		//document.write(matrix[i].join(" - "));	
+		//document.write("<br>");
+		var sid = String(i)+String(j);
+		document.getElementById(sid).innerHTML = matrix[i][j];//+" - ";
+		//document.getElementById(sid).style.color = Qblack;
+		}
+	}
+}
+
+function pos2id(pos){
+	var target = String(pos[0])+String(pos[1]);
+	return target;
+}	
+
+function getQ(pos){
+	valueQ = document.getElementById(pos2id(pos)).innerHTML;
+	return parseInt(valueQ,10);
+}
+
+function update(pos, newvalue){
+	var target = pos2id(pos);
+	document.getElementById(target).innerHTML = newvalue;//+" - ";
+	}
+
+function swap (pos1,pos2){
+	var t1 = pos2id(pos1);
+	var t2 = pos2id(pos2);
+	var x = getQ(pos2);
+	var y = getQ(pos1);
+	
+	document.getElementById(t1).innerHTML = y + " - ";
+	document.getElementById(t2).innerHTML = x + " - ";
+}
+
+function componentToHex(c) {
+    var hex = parseInt(c).toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+
+function rgb2hex(rgb) {
+	rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+	return ("#" + componentToHex(rgb[1])+ componentToHex(rgb[2]) + componentToHex(rgb[3]));
+}
+
+function ckarr(ray, v) {
+    for (var i = 0; i < ray.length; i++) {
+        if (ray[i] == v) {
+            return i;
+        }
+    }
+    return false;
+}
+
+function deter_direction(pos){
+	
+	
+	if (pos[0] == 0 && pos[1] == 0){
+		var cp_list = [[1,0],[0,1]];
+		return cp_list;
+	}
+	else if (pos[0] == 0 && pos[1] == arena_scale-1){
+		var cp_list = [[0, arena_scale-2],[1, arena_scale-1]];
+		return cp_list;
+	}
+	else if (pos[0] == arena_scale-1 && pos[1] == arena_scale-1){
+		var cp_list = [[arena_scale-1, arena_scale-2],[arena_scale-2, arena_scale-1]];
+		return cp_list;
+	}
+	else if (pos[0] == arena_scale-1 && pos[1] == 0){
+		var cp_list = [[arena_scale-2, 0],[arena_scale-1, 1]];
+		return cp_list;
+	}
+	
+	else if (pos[0] == 0 && pos[1] >= 1){
+		var cp_list = [[pos[0]+1, pos[1]], [pos[0],pos[1]-1], [pos[0], pos[1]+1]];
+		return cp_list;
+	}
+	else if (pos[0] == arena_scale-1 && pos[1] >= 1){
+		var cp_list = [[pos[0]-1, pos[1]], [pos[0], pos[1]-1], [pos[0], pos[1]+1]];
+		return cp_list;
+	}
+	else if (pos[0] >= 1 && pos[1] == 0){
+		var cp_list = [[pos[0], pos[1]+1], [pos[0]-1, pos[1]], [pos[0]+1, pos[1]]];
+		return cp_list;
+	}
+	else if (pos[0] >= 1 && pos[1] == arena_scale-1){
+		var cp_list = [[pos[0], pos[1]-1], [pos[0]-1, pos[1]], [pos[0]+1, pos[1]]];
+		return cp_list;
+	}
+	
+	else{
+		var cp_list = [[pos[0]-1, pos[1]], [pos[0]+1, pos[1]], [pos[0], pos[1]-1], [pos[0], pos[1]+1]];
+		return cp_list;
+	}
+}
+
+function merge(center){
+	
+	var compare_list = deter_direction(center);
+	
+	for(var i = compare_list.length - 1; i >= 0; i--) {
+		if(getQ(compare_list[i]) != getQ(center)) {
+		   compare_list.splice(i, 1);
+		}
+	}
+	if (compare_list.length != 0){
+		for(var i=0; i<compare_list.length;i++){
+			update(compare_list[i],roll(max_ger_Q));
+		}
+		
+		update(center,getQ(center)+1);
+		clicktimes++;
+		document.getElementById("merge").innerHTML = "#Merged - "+clicktimes+"　　";
+	}
+
+	if (getQ(center) > max_Q){
+		if (document.getElementById(pos2id(center)).style.color != "red"){
+			document.getElementById(pos2id(center)).style.color = "red";
+			red++;
+		}
+		else{
+			document.getElementById(pos2id(center)).style.color = "black";
+			red--;
+		}
+		
+		document.getElementById("redcount").innerHTML = red+"/36 　　";
+		//if (ulti_state[center[0]][center[1]] == 0){
+		//	ulti_state[center[0]][center[1]] = 1;
+		//}
+		//else{
+		//	ulti_state[center[0]][center[1]] = 0;
+		//}
+		update(center,roll(max_ger_Q));//roll(max_ger_Q));
+		//document.getElementById(pos2id(center)).style.color = "red";
+		
+	}
+
+	var decColor = Math.floor(Math.pow((red/36),0.5)*225);
+	if (decColor.toString(16).length == 1){
+		//window.alert('#0'+decColor.toString(16)+'0000');
+		document.getElementById("redcount").style.color ='#0'+decColor.toString(16)+'0000';
+		//document.getElementById("redcount").style.color ='#0000';
+	}
+
+	else if (decColor.toString(16).length == 2){
+		//window.alert('#'+decColor.toString(16)+'0000');
+		document.getElementById("redcount").style.color ='#'+decColor.toString(16)+'0000';
+	}
+
+
+
+	if (red == 36){
+		window.alert("Merged: "+clicktimes+" 次\nCheated: "+cheated+" \n花太多步了吧");
+		location.reload(); 
+	}
+
+}
+
+
+
+function tmp(){
+	window.onload = function() {
+		if(!window.location.hash) {
+			window.location = window.location + '#loaded';
+			window.location.reload();
+		}
+	//document.write(window.location.hash);
+	}
+	window.onload();
+	}
+
+	
+</script>
+<br>
+
+<p><font size=4>點按鈕來融合該位置的數字</font></p><br>
+<p><font size=4>若周圍有相同的數字會融合 +1；被吸收的位置會亂數產生新數字</font></p><br>
+<p><font size=4>當超過 4 的時候該位置會變成紅色</font></p><br>
+<p><font size=4>全部的位置都變成紅色就結算囉</font></p><br>
+<p><font size=4>*若你太廢玩到卡住了，只好點 shuffle 洗牌</font></p><br>
+
+</body>
+</html>
